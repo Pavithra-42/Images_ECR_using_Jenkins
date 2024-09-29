@@ -23,7 +23,7 @@ pipeline {
             steps {
                 script {
                     // Build the frontend image using the Dockerfile in the 'front_end' directory
-                    sh 'docker build -t my-frontend ./front_end'
+                    sh 'docker build -t my-frontend -f front_end .'
                 }
             }
         }
@@ -32,7 +32,7 @@ pipeline {
             steps {
                 script {
                     // Build the frontend image using the Dockerfile in the 'front_end' directory
-                    sh 'docker build -t my-backend ./backend'
+                    sh 'docker build -t my-backend -f backend .'
                 }
             }
         }
