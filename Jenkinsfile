@@ -5,34 +5,25 @@ pipeline {
         AWS_REGION = 'us-east-1'
         AWS_ACCOUNT_ID = '231590249329'
         ECR_REPO_FRONTEND = "231590249329.dkr.ecr.us-east-1.amazonaws.com/pavi/frontend"
-        ECR_REPO_BACKEND = "231590249329.dkr.ecr.us-east-1.amazonaws.com/pavi/frontend"
+        ECR_REPO_BACKEND = "231590249329.dkr.ecr.us-east-1.amazonaws.com/pavi/backend"
     }
 
     tools {
-  dockerTool 'docker'
-}
+        dockerTool 'docker'
+    }
 
     stages {
-       stage('Git Checkout') {
+        stage('Git Checkout') {
             steps {
                 git branch: 'main', credentialsId: 'git', url: 'https://github.com/Pavithra-42/Images_ECR_using_Jenkins.git'
             }
         }
 
-       stage('Build Frontend Docker Image') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the frontend image using the Dockerfile in the 'front_end' directory
-                    sh 'docker build -t my-frontend -f front_end .'
-                }
-            }
-        }
-
-        stage('Build backend Docker Image') {
-            steps {
-                script {
-                    // Build the frontend image using the Dockerfile in the 'front_end' directory
-                    sh 'docker build -t my-backend -f backend .'
+                    // Build the unified image using the combined Dockerfile
+                    sh 'docker build -t my-app .'
                 }
             }
         }
@@ -46,21 +37,11 @@ pipeline {
             }
         }
 
-        stage('Push Frontend Docker Image') {
+        stage('Push Docker Image to ECR') {
             steps {
                 script {
-                    // Tag and push frontend image to ECR
-                    sh "docker tag my-frontend:latest 231590249329.dkr.ecr.us-east-1.amazonaws.com/pavi/frontend:latest"
-                    sh "docker push 231590249329.dkr.ecr.us-east-1.amazonaws.com/pavi/frontend:latest"
-                }
-            }
-        }
-
-        stage('Push Backend Docker Image') {
-            steps {
-                script {
-                    // Tag and push backend image to ECR
-                    sh "docker tag my-backend:latest 231590249329.dkr.ecr.us-east-1.amazonaws.com/pavi/backend:latest"
+                    // Tag and push the built image to ECR
+                    sh "docker tag my-app:latest 231590249329.dkr.ecr.us-east-1.amazonaws.com/pavi/frontend:latest"
                     sh "docker push 231590249329.dkr.ecr.us-east-1.amazonaws.com/pavi/backend:latest"
                 }
             }
