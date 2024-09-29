@@ -1,20 +1,35 @@
-# Use the official Node.js image as a base
-FROM node:14
+# Stage 1: Build Frontend
+FROM node:14 AS frontend
 
-# Set the working directory in the container
-WORKDIR /app
+# Set the working directory for the frontend
+WORKDIR /app/frontend
 
-# Copy package.json and package-lock.json (if available)
-COPY package*.json ./
+# Copy package.json and package-lock.json for frontend
+COPY front_end/package*.json ./
 
-# Install dependencies
+# Install frontend dependencies
 RUN npm install
 
-# Copy the rest of your application code
-COPY . .
+# Copy the rest of the frontend application code
+COPY front_end ./
 
-# Expose the application port (change as needed)
-EXPOSE 3000
+# Build the frontend application
+RUN npm run build
 
-# Command to run the application
+# Stage 2: Build Backend
+FROM your-backend-base-image AS backend
+
+# Set the working directory for the backend
+WORKDIR /app/backend
+
+# Copy necessary files for the backend
+COPY backend/ .  # Adjust if you have specific files to copy
+
+# Optionally copy the built frontend files to the backend
+COPY --from=frontend /app/frontend/build ./frontend  # Adjust path as needed
+
+# Install backend dependencies
+RUN your-backend-setup-commands  # Add any commands needed to set up the backend
+
+# Specify how to run your backend application
 CMD ["npm", "start"]
