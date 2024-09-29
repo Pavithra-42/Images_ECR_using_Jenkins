@@ -33,8 +33,8 @@ COPY --from=backend-build /app/backend /app/backend
 WORKDIR /app
 
 # Expose ports (if needed, adjust based on your app's configuration)
-EXPOSE 4000   # Port for frontend
-EXPOSE 5001   # Port for backend
+EXPOSE 4000  # Port for frontend
+EXPOSE 5001  # Port for backend
 
 # Start command for both applications
 # Assuming you have the frontend and backend starting commands; adjust as necessary
