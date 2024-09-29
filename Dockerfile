@@ -1,35 +1,52 @@
-# Stage 1: Build Frontend
-FROM node:14 AS frontend
+# Base image for frontend
+FROM node:14 AS frontend-build
 
-# Set the working directory for the frontend
+# Set working directory for frontend
 WORKDIR /app/frontend
 
-# Copy package.json and package-lock.json for frontend
+# Copy frontend package.json and package-lock.json
 COPY front_end/package*.json ./
 
-# Install frontend dependencies
+# Install dependencies
 RUN npm install
 
-# Copy the rest of the frontend application code
-COPY front_end ./
+# Copy the rest of the frontend files
+COPY front_end/ .
 
-# Build the frontend application
+# Build the frontend (if you have a build command)
 RUN npm run build
 
-# Stage 2: Build Backend
-FROM your-backend-base-image AS backend
+# Base image for backend
+FROM node:14 AS backend-build
 
-# Set the working directory for the backend
+# Set working directory for backend
 WORKDIR /app/backend
 
-# Copy necessary files for the backend
-COPY backend/ .  # Adjust if you have specific files to copy
+# Copy backend package.json and package-lock.json
+COPY backend/package*.json ./
 
-# Optionally copy the built frontend files to the backend
-COPY --from=frontend /app/frontend/build ./frontend  # Adjust path as needed
+# Install dependencies
+RUN npm install
 
-# Install backend dependencies
-RUN your-backend-setup-commands  # Add any commands needed to set up the backend
+# Copy the rest of the backend files
+COPY backend/ .
 
-# Specify how to run your backend application
-CMD ["npm", "start"]
+# Build the backend (if you have a build command)
+# RUN npm run build (if needed)
+
+# Final stage to run both applications
+FROM node:14
+
+# Copy built frontend and backend from previous stages
+COPY --from=frontend-build /app/frontend/build /app/frontend/build
+COPY --from=backend-build /app/backend /app/backend
+
+# Set working directory for running the applications
+WORKDIR /app
+
+# Expose ports (if needed, adjust based on your app's configuration)
+EXPOSE 3000 # For frontend
+EXPOSE 5000 # For backend
+
+# Start command (adjust based on your app's structure)
+CMD ["node", "backend/server.js"] # Assuming the backend starts with server.js
