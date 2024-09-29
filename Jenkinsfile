@@ -28,6 +28,16 @@ pipeline {
             }
         }
 
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    // Run the Docker container and map the desired ports
+                    // Adjust the port numbers based on your application
+                    sh 'docker run -d -p 8080:4000 -p 5001:5000 my-app'
+                }
+            }
+        }
+
         stage('Authenticate to ECR') {
             steps {
                 script {
