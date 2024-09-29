@@ -5,7 +5,7 @@ FROM node:14 AS frontend-build
 WORKDIR /app/frontend
 
 # Copy the frontend image files directly
-COPY front_end/ ./
+COPY front_end/ ./ 
 
 # If you have a build step, uncomment the next line
 # RUN npm run build # Remove this if you don't need a build step
@@ -17,7 +17,7 @@ FROM node:14 AS backend-build
 WORKDIR /app/backend
 
 # Copy the backend image files directly
-COPY backend/ ./
+COPY backend/ ./ 
 
 # If you have a build step, uncomment the next line
 # RUN npm run build # Remove this if you don't need a build step
@@ -32,10 +32,5 @@ COPY --from=backend-build /app/backend /app/backend
 # Set working directory for running the applications
 WORKDIR /app
 
-# Expose ports (if needed, adjust based on your app's configuration)
-EXPOSE   # Port for frontend
-EXPOSE   # Port for backend
-
 # Start command for both applications
-# Assuming you have the frontend and backend starting commands; adjust as necessary
 CMD ["node", "backend/server.js"]  # Adjust this to your backend start command
