@@ -2,34 +2,37 @@ pipeline {
     agent any
 
     environment {
-        AWS_REGION = '<your-region>'
-        AWS_ACCOUNT_ID = '<your-account-id>'
-        ECR_REPO_FRONTEND = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/my-frontend"
-        ECR_REPO_BACKEND = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/my-backend"
+        AWS_REGION = 'us-east-1'
+        AWS_ACCOUNT_ID = '231590249329'
+        ECR_REPO_FRONTEND = "231590249329.dkr.ecr.us-east-1.amazonaws.com/pavi/frontend"
+        ECR_REPO_BACKEND = "231590249329.dkr.ecr.us-east-1.amazonaws.com/pavi/frontend"
     }
 
+    tools {
+  dockerTool 'docker'
+}
+
     stages {
-        stage('Clone Repository') {
+       stage('Git Checkout') {
             steps {
-                // Clone your repo (if using Git)
-                git '<your-repo-url>'
+                git branch: 'main', credentialsId: 'git', url: 'https://github.com/Pavithra-42/Images_ECR_using_Jenkins.git'
             }
         }
 
-        stage('Build Frontend Docker Image') {
+       stage('Build Frontend Docker Image') {
             steps {
                 script {
-                    // Build the frontend image using Dockerfile in the root
-                    sh 'docker build -t my-frontend -f Dockerfile.frontend .'
+                    // Build the frontend image using the Dockerfile in the 'front_end' directory
+                    sh 'docker build -t my-frontend ./front_end'
                 }
             }
         }
 
-        stage('Build Backend Docker Image') {
+        stage('Build backend Docker Image') {
             steps {
                 script {
-                    // Build the backend image using Dockerfile in the root
-                    sh 'docker build -t my-backend -f Dockerfile.backend .'
+                    // Build the frontend image using the Dockerfile in the 'front_end' directory
+                    sh 'docker build -t my-backend ./backend'
                 }
             }
         }
@@ -38,7 +41,7 @@ pipeline {
             steps {
                 script {
                     // Authenticate Docker to ECR
-                    sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO_FRONTEND}"
+                    sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 231590249329.dkr.ecr.us-east-1.amazonaws.com/pavi/frontend"
                 }
             }
         }
@@ -47,8 +50,8 @@ pipeline {
             steps {
                 script {
                     // Tag and push frontend image to ECR
-                    sh "docker tag my-frontend:latest ${ECR_REPO_FRONTEND}:latest"
-                    sh "docker push ${ECR_REPO_FRONTEND}:latest"
+                    sh "docker tag my-frontend:latest 231590249329.dkr.ecr.us-east-1.amazonaws.com/pavi/frontend:latest"
+                    sh "docker push 231590249329.dkr.ecr.us-east-1.amazonaws.com/pavi/frontend:latest"
                 }
             }
         }
@@ -57,8 +60,8 @@ pipeline {
             steps {
                 script {
                     // Tag and push backend image to ECR
-                    sh "docker tag my-backend:latest ${ECR_REPO_BACKEND}:latest"
-                    sh "docker push ${ECR_REPO_BACKEND}:latest"
+                    sh "docker tag my-backend:latest 231590249329.dkr.ecr.us-east-1.amazonaws.com/pavi/backend:latest"
+                    sh "docker push 231590249329.dkr.ecr.us-east-1.amazonaws.com/pavi/backend:latest"
                 }
             }
         }
